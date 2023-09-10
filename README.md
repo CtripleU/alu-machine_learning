@@ -1,1 +1,1 @@
-# math
+# alu-machine-learning
