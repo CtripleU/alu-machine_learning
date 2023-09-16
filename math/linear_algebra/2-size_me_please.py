@@ -5,4 +5,4 @@ def matrix_shape(mat):
     while isinstance(mat, list):
         shape.append(len(mat))
         mat = mat[0]
-    return matrix_shape
+    return shape
