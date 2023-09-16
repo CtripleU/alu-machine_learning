@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-""" Calculates the shpe of a matrix """
+""" Calculates the shape of a matrix
+"""
+
 def matrix_shape(mat):
-    """ Calculates the shpe of a matrix """
+    """ Calculates the shape of a matrix """
     shape = []
     while isinstance(mat, list):
         shape.append(len(mat))
