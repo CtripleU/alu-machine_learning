@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
 
 """ Add two matrices """
-import numpy as np
+
+
+def matrix_shape(matrix):
+    """ Matrix shape """
+
+    matrix_shape = []
+    while type(matrix) is list:
+        matrix_shape.append(len(matrix))
+        matrix = matrix[0]
+    return matrix_shape
 
 
 def add_matrices(mat1, mat2):
-    """ Adds two matrices
-    Args:
-        mat1 (_type_): _description_
-        mat2 (_type_): _description_
+    """ Add two matrices """
 
-    Returns:
-        _type_: _description_
-    """
-    matrix1 = np.array(mat1)
-    matrix2 = np.array(mat2)
-    if matrix1.shape != matrix2.shape:
+    if matrix_shape(mat1) != matrix_shape(mat2):
         return None
-    return matrix1 + matrix2
+    if len(matrix_shape(mat1)) is 1:
+        return [mat1[i] + mat2[i] for i in range(len(mat1))]
+    return [add_matrices(mat1[i], mat2[i]) for i in range(len(mat1))]
