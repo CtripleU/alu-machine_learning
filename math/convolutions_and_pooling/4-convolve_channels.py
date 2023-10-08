@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Performs convolution on a image with multiple channels using given padding and stride
+Performs convolution on a image with multiple channels using 
+given padding and stride
 """
 
 
@@ -9,7 +10,8 @@ import numpy as np
 
 def convolve_channels(images, kernel, padding='same', stride=(1, 1)):
     """
-    Performs convolution on a image with multiple channels using given padding and stride
+    Performs convolution on a image with multiple channels using 
+    given padding and stride
     """
     m, height, width, c = images.shape
     kh, kw, kc = kernel.shape
