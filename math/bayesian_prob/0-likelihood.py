@@ -103,12 +103,13 @@ def likelihood(x, n, P):
         raise TypeError("P must be a 1D numpy.ndarray")
     
     # Check if all values in P are in the range [0, 1]
-    if np.any((P < 0) | (P > 1)):
-        raise ValueError("All values in P must be in the range [0, 1]")
+    for value in P:
+        if value > 1 or value < 0:
+            raise ValueError("All values in P must be in the range [0, 1]")
     
-    # Check if P has values that start at 0.0 and end at 1.0 and is sorted
-    if P[0] != 0.0 or P[-1] != 1.0 or not np.all(np.diff(P) >= 0):
-        raise ValueError("P must have values starting at 0.0, ending at 1.0, and be sorted.")
+    # # Check if P has values that start at 0.0 and end at 1.0 and is sorted
+    # if P[0] != 0.0 or P[-1] != 1.0 or not np.all(np.diff(P) >= 0):
+    #     raise ValueError("P must have values starting at 0.0, ending at 1.0, and be sorted.")
     
     # Calculate the likelihood for each probability in P
     factorial = np.math.factorial
