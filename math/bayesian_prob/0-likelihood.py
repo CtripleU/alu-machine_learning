@@ -9,18 +9,18 @@ import numpy as np
 
 
 def likelihood(x, n, P):
-    """Calculates the likelihood of obtaining the data given various hypothetical
-       probabilitiesnof developing severe side effects.
+    """Calculates the likelihood of obtaining the data given various
+       hypothetical probabilities of developing severe side effects.
 
     Args:
         x: The number of patients that develop severe side effects.
         n: The total number of patients observed.
-        P: A 1D numpy.ndarray containing the various hypothetical probabilities 
+        P: A 1D numpy.ndarray containing the various hypothetical probabilities
            of developing severe side effects.
 
     Returns:
-        A 1D numpy.ndarray containing the likelihood of obtaining the data, x and n, 
-        for each probability in P, respectively.
+        A 1D numpy.ndarray containing the likelihood of obtaining
+        the data, x and n, for each probability in P, respectively.
     """
 
     # Check if n is a positive integer.
@@ -34,10 +34,12 @@ def likelihood(x, n, P):
     # # Check if x is greater than n
     # if x > n:
     #     raise ValueError("x cannot be greater than n")
-    
+
     # Check if x is an integer greater than or equal to 0
     if not isinstance(x, int) or x < 0:
-        raise ValueError("x must be an integer that is greater than or equal to 0")
+        raise ValueError(
+            "x must be an integer that is greater than or equal to 0"
+        )
 
     # Check if x is greater than n
     if x > n:
