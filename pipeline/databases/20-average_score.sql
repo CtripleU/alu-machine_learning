@@ -1,3 +1,4 @@
+-- stored procedure
 DELIMITER $$
 
 CREATE PROCEDURE ComputeAverageScoreForUser (IN user_id_param INT)
