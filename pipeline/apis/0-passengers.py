@@ -1,31 +1,53 @@
 #!/usr/bin/env python3
-""" Return list of ships"""
-
+"""
+Defines methods to ping the Star Wars API and return the list of ships
+that can hold a given number of passengers
+"""
 
 import requests
 
 
 def availableShips(passengerCount):
-    """ Return list of ships
+    '''
+    This function returns a list of starships that
+      can hold a given number of passengers.
 
-    Args:
-        passengerCount (int): number of ships
-    """
+    Parameters:
+    passengerCount (int): The minimum number
+      of passengers a starship must be able to hold.
 
-    res = requests.get('https://swapi-api.alx-tools.com/api/starships')
+    Returns:
+    shipslist (list): A list of starship
+      names that can hold at least 'passengerCount' passengers.
+    '''
 
-    output = []
-    while res.status_code == 200:
-        res = res.json()
-        for ship in res['results']:
-            passengers = ship['passengers'].replace(',', '')
-            try:
-                if int(passengers) >= passengerCount:
-                    output.append(ship['name'])
-            except ValueError:
-                pass
-        try:
-            res = requests.get(res['next'])
-        except Exception:
-            break
-    return output
+    # API endpoint to fetch starship data
+    url = "https://swapi-api.alx-tools.com/api/starships/?format=json"
+
+    # List to store all starship data
+    ships = []
+
+    # Loop until all pages of the API response have been processed
+    while url:
+        # Get the API response
+        response = requests.get(url).json()
+
+        # Add the results from the current page to our list
+        ships += response.get('results')
+
+        # Get the URL for the next page
+        url = response.get('next')
+
+    shipslist = []
+
+    # Loop through each starship
+    for ship in ships:
+        # Get the passenger capacity, removing any commas
+        passengers = ship.get('passengers').replace(",", "")
+
+        if passengers != "n/a" and passengers != 'unknown':
+            if int(passengers) >= passengerCount:
+                shipslist.append(ship.get('name'))
+
+    # Return the list of suitable starships
+    return shipslist
