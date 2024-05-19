@@ -119,4 +119,3 @@ class NST:
         gram /= tf.cast(pd, tf.float32)
 
         return gram
-    
