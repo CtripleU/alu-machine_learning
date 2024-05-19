@@ -72,29 +72,32 @@ class NST:
 
         h, w, _ = image.shape
         max_dim = 512
-        scale = max_dim / max(h, w)
+        if h > w:
+            new_h = max_dim
+            new_w = int(w * max_dim / h)
+        else:
+            new_w = max_dim
+            new_h = int(h * max_dim / w)
 
-        new_h = round(h * scale)
-        new_w = round(w * scale)
-
-        image = tf.image.resize(image, (new_h, new_w),
-                                method=tf.image.ResizeMethod.BICUBIC)
+        image = tf.image.resize(
+            image, (new_h, new_w), method=tf.image.ResizeMethod.BICUBIC)
         image = tf.expand_dims(image, axis=0)
-        image = tf.clip_by_value(image / 255, 0, 1)
+        image = image / 255
         return image
 
     def _get_layer_outputs(self, image):
         """
-        Extracts the outputs of specific layers from the VGG19 model
+        Extracts the outputs of specific layers from the ResNet50 model.
 
         Args:
-            image: The input image
+            image: The input image.
 
         Returns:
-            A dictionary containing the outputs of the selected style and content layers
+            A dictionary containing the outputs of the selected style and content layers.
         """
         outputs = {}
         for layer in self.style_layers:
-            outputs[layer] = self.vgg.get_layer(layer)(image)
-        outputs[self.content_layer] = self.vgg.get_layer(self.content_layer)(image)
+            outputs[layer] = self.model.get_layer(layer)(image)
+        outputs[self.content_layer] = self.model.get_layer(
+            self.content_layer)(image)
         return outputs
