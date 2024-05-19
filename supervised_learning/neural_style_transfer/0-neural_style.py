@@ -2,6 +2,7 @@
 # 
 import tensorflow as tf
 import numpy as np
+from tensorflow.keras.applications import VGG19
 
 class NST:
     """
@@ -44,60 +45,65 @@ class NST:
         self.alpha = alpha
         self.beta = beta
 
-        # Load VGG19 model excluding fully connected layers
-        self.vgg = tf.keras.applications.VGG19(include_top=False, 
-                                                weights='imagenet') 
-        self.vgg.trainable = False
+        def _validate_input(self, image, image_name):
+            """
+            Helper function to validate image inputs.
+            """
+            if not isinstance(image, np.ndarray) or image.ndim != 3 or image.shape[-1] != 3:
+                raise TypeError(f"{image_name} must be a numpy.ndarray with shape (h, w, 3)")
 
-    @staticmethod
-    def scale_image(image):
-        """
-        Rescales an image such that its pixel values are between 0 and 1
-        and its largest side is 512 pixels
+        @staticmethod
+        def scale_image(image):
+            """
+            Rescales an image to have pixel values between 0 and 1, with the largest side 
+            being 512 pixels.
 
-        Args:
-            image: A numpy.ndarray of shape (h, w, 3) containing the image to be scaled
+            Args:
+                image (np.ndarray): The image to be scaled.
 
-        Raises:
-            TypeError: If the input image is not a numpy.ndarray with shape (h, w, 3)
+            Returns:
+                tf.Tensor: The scaled image as a tensor (shape: (1, h_new, w_new, 3)).
 
-        Returns:
-            The scaled image as a tf.tensor with shape (1, h_new, w_new, 3),
-            where max(h_new, w_new) == 512 and min(h_new, w_new) is scaled proportionately
-        """
+            Raises:
+                TypeError: If the input image does not have the correct shape.
+            """
 
-        if not isinstance(image, np.ndarray) or image.shape[2] != 3:
-            raise TypeError(
-                "image must be a numpy.ndarray with shape (h, w, 3)")
+            if not isinstance(image, np.ndarray) or image.ndim != 3 or image.shape[-1] != 3:
+                raise TypeError("image must be a numpy.ndarray with shape (h, w, 3)")
 
-        h, w, _ = image.shape
-        max_dim = 512
-        if h > w:
-            new_h = max_dim
-            new_w = int(w * max_dim / h)
-        else:
-            new_w = max_dim
-            new_h = int(h * max_dim / w)
+            h, w, _ = image.shape
+            max_dim = 512 
+            if h > w:
+                new_h = max_dim
+                new_w = int(w * max_dim / h)
+            else:
+                new_w = max_dim
+                new_h = int(h * max_dim / w)
 
-        image = tf.image.resize(
-            image, (new_h, new_w), method=tf.image.ResizeMethod.BICUBIC)
-        image = tf.expand_dims(image, axis=0)
-        image = image / 255
-        return image
+            image = tf.image.resize(
+                image, (new_h, new_w), method=tf.image.ResizeMethod.BICUBIC
+            )
+            return tf.expand_dims(image, axis=0) / 255.0  
 
-    def _get_layer_outputs(self, image):
-        """
-        Extracts the outputs of specific layers from the ResNet50 model.
+        def load_model(self):
+            """
+            Loads the VGG19 model, pre-trained on ImageNet, for Neural Style Transfer.
+            Replaces MaxPooling layers with AveragePooling for smoother gradients.
 
-        Args:
-            image: The input image.
+            Returns:
+                tf.keras.Model: The modified VGG19 model.
+            """
 
-        Returns:
-            A dictionary containing the outputs of the selected style and content layers.
-        """
-        outputs = {}
-        for layer in self.style_layers:
-            outputs[layer] = self.model.get_layer(layer)(image)
-        outputs[self.content_layer] = self.model.get_layer(
-            self.content_layer)(image)
-        return outputs
+            vgg = VGG19(include_top=False, weights='imagenet')
+            vgg.trainable = False
+
+            # Replace MaxPooling with AveragePooling 
+            custom_objects = {'MaxPooling2D': tf.keras.layers.AveragePooling2D}
+            vgg = tf.keras.models.clone_model(vgg, clone_function=custom_objects)
+
+            # Extract outputs for style and content layers
+            style_outputs = [vgg.get_layer(layer).output for layer in self.style_layers]
+            content_output = vgg.get_layer(self.content_layer).output
+            outputs = style_outputs + [content_output]
+
+            return tf.keras.Model(vgg.input, outputs)
