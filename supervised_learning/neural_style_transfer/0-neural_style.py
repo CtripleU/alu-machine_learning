@@ -45,38 +45,37 @@ class NST:
         self.beta = beta
    
    
-    @staticmethod
-    def scale_image(image):
-        """
-        Rescales an image such that its pixel values are between 0 and 1
-        and its largest side is 512 pixels.
+@staticmethod
+def scale_image(image):
+    """
+    Rescales an image such that its pixel values are between 0 and 1
+    and its largest side is 512 pixels.
 
-        Args:
-            image (np.ndarray): A numpy.ndarray of shape (h, w, 3) containing
-            the image to be scaled.
+    Args:
+        image (np.ndarray): A numpy.ndarray of shape (h, w, 3) containing
+        the image to be scaled.
 
-        Raises:
-            TypeError: If the image is not a np.ndarray with shape (h, w, 3).
+    Raises:
+        TypeError: If the image is not a np.ndarray with shape (h, w, 3).
 
-        Returns:
-            tf.Tensor: The scaled image.
-        """
+    Returns:
+        tf.Tensor: The scaled image.
+    """
 
-        if not isinstance(image, np.ndarray) or image.shape[2] != 3:
-            raise TypeError("image must be a numpy.ndarray with shape (h, w, 3)")
+    if not isinstance(image, np.ndarray) or image.shape[2] != 3:
+        raise TypeError("image must be a numpy.ndarray with shape (h, w, 3)")
 
-        h, w, _ = image.shape
-        max_dim = 512
-        if h > w:
-            new_h = max_dim
-            new_w = int(w * max_dim // h)
-        else:
-            new_w = max_dim
-            new_h = int(h * max_dim // w)
+    h, w, _ = image.shape
+    max_dim = 512
+    if h > w:
+        new_h = max_dim
+        new_w = round(w * max_dim / h)
+    else:
+        new_w = max_dim
+        new_h = round(h * max_dim / w)
 
-        scaled_image = tf.image.resize(
-            image, tf.constant([h_new, w_new], dtype=tf.int32), 
-            tf.image.ResizeMethod.BICUBIC)
-        scaled_image = tf.reshape(scaled_image, (1, new_h, new_w, 3))
-        scaled_image = tf.clip_by_value(scaled_image / 255, 0.0, 1.0)
-        return scaled_image
+    scaled_image = tf.image.resize(
+        image, (new_h, new_w), method=tf.image.ResizeMethod.BICUBIC)
+    scaled_image = tf.expand_dims(scaled_image, axis=0)
+    scaled_image = tf.clip_by_value(scaled_image / 255, 0.0, 1.0)
+    return scaled_image
