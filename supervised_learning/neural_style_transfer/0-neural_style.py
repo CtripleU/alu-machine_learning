@@ -68,9 +68,10 @@ def scale_image(image):
     Returns:
         tf.Tensor: The scaled image.
     """
-
-    if not isinstance(image, np.ndarray) or image.shape[2] != 3:
-        raise TypeError("image must be a numpy.ndarray with shape (h, w, 3)")
+    if not isinstance(image, np.ndarray
+                          ) or len(image.shape) != 3 or image.shape[2] != 3:
+            raise TypeError(
+                "image must be a numpy.ndarray with shape (h, w, 3)")
 
     h, w, _ = image.shape
     max_dim = 512
