@@ -67,15 +67,13 @@ class NST:
 
         h, w, _ = image.shape
         max_dim = 512
-        if h > w:
-            new_h = max_dim
-            new_w = int(w * max_dim / h)
-        else:
-            new_w = max_dim
-            new_h = int(h * max_dim / w)
+        scale = max_dim / max(h, w)
+
+        new_h = round(h * scale)
+        new_w = round(w * scale)
 
         image = tf.image.resize(image, (new_h, new_w),
                                 method=tf.image.ResizeMethod.BICUBIC)
         image = tf.expand_dims(image, axis=0)
-        image = image / 255.0
+        image = tf.clip_by_value(image / 255, 0, 1)
         return image
