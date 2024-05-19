@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-# 
+#
 import tensorflow as tf
 import numpy as np
+
 
 class NST:
     """
     neural style transfer
     """
+
 
     style_layers = ['block1_conv1', 'block2_conv1',
                    'block3_conv1', 'block4_conv1', 'block5_conv1']
@@ -49,8 +51,8 @@ class NST:
         self.content_image = self.scale_image(content_image)
         self.alpha = alpha
         self.beta = beta
-   
-   
+
+
 @staticmethod
 def scale_image(image):
     """
