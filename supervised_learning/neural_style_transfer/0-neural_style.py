@@ -44,66 +44,39 @@ class NST:
         self.content_image = self.scale_image(content_image)
         self.alpha = alpha
         self.beta = beta
+   
+   
+    @staticmethod
+    def scale_image(image):
+        """
+        Rescales an image such that its pixel values are between 0 and 1
+        and its largest side is 512 pixels.
 
-        def _validate_input(self, image, image_name):
-            """
-            Helper function to validate image inputs.
-            """
-            if not isinstance(image, np.ndarray) or image.ndim != 3 or image.shape[-1] != 3:
-                raise TypeError(f"{image_name} must be a numpy.ndarray with shape (h, w, 3)")
+        Args:
+            image (np.ndarray): A numpy.ndarray of shape (h, w, 3) containing
+            the image to be scaled.
 
-        @staticmethod
-        def scale_image(image):
-            """
-            Rescales an image to have pixel values between 0 and 1, with the largest side 
-            being 512 pixels.
+        Raises:
+            TypeError: If the image is not a np.ndarray with shape (h, w, 3).
 
-            Args:
-                image (np.ndarray): The image to be scaled.
+        Returns:
+            tf.Tensor: The scaled image.
+        """
 
-            Returns:
-                tf.Tensor: The scaled image as a tensor (shape: (1, h_new, w_new, 3)).
+        if not isinstance(image, np.ndarray) or image.shape[2] != 3:
+            raise TypeError("image must be a numpy.ndarray with shape (h, w, 3)")
 
-            Raises:
-                TypeError: If the input image does not have the correct shape.
-            """
+        h, w, _ = image.shape
+        max_dim = 512
+        if h > w:
+            new_h = max_dim
+            new_w = int(w * max_dim / h)
+        else:
+            new_w = max_dim
+            new_h = int(h * max_dim / w)
 
-            if not isinstance(image, np.ndarray) or image.ndim != 3 or image.shape[-1] != 3:
-                raise TypeError("image must be a numpy.ndarray with shape (h, w, 3)")
-
-            h, w, _ = image.shape
-            max_dim = 512 
-            if h > w:
-                new_h = max_dim
-                new_w = int(w * max_dim / h)
-            else:
-                new_w = max_dim
-                new_h = int(h * max_dim / w)
-
-            image = tf.image.resize(
-                image, (new_h, new_w), method=tf.image.ResizeMethod.BICUBIC
-            )
-            return tf.expand_dims(image, axis=0) / 255.0  
-
-        def load_model(self):
-            """
-            Loads the VGG19 model, pre-trained on ImageNet, for Neural Style Transfer.
-            Replaces MaxPooling layers with AveragePooling for smoother gradients.
-
-            Returns:
-                tf.keras.Model: The modified VGG19 model.
-            """
-
-            vgg = VGG19(include_top=False, weights='imagenet')
-            vgg.trainable = False
-
-            # Replace MaxPooling with AveragePooling 
-            custom_objects = {'MaxPooling2D': tf.keras.layers.AveragePooling2D}
-            vgg = tf.keras.models.clone_model(vgg, clone_function=custom_objects)
-
-            # Extract outputs for style and content layers
-            style_outputs = [vgg.get_layer(layer).output for layer in self.style_layers]
-            content_output = vgg.get_layer(self.content_layer).output
-            outputs = style_outputs + [content_output]
-
-            return tf.keras.Model(vgg.input, outputs)
+        image = tf.image.resize(
+            image, (new_h, new_w), method=tf.image.ResizeMethod.BICUBIC)
+        image = tf.expand_dims(image, axis=0)
+        image = image / 255
+        return image
