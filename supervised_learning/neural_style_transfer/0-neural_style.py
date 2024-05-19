@@ -44,6 +44,11 @@ class NST:
         self.alpha = alpha
         self.beta = beta
 
+        # Load VGG19 model excluding fully connected layers
+        self.vgg = tf.keras.applications.VGG19(include_top=False, 
+                                                weights='imagenet') 
+        self.vgg.trainable = False
+
     @staticmethod
     def scale_image(image):
         """
@@ -77,3 +82,19 @@ class NST:
         image = tf.expand_dims(image, axis=0)
         image = tf.clip_by_value(image / 255, 0, 1)
         return image
+
+    def _get_layer_outputs(self, image):
+        """
+        Extracts the outputs of specific layers from the VGG19 model
+
+        Args:
+            image: The input image
+
+        Returns:
+            A dictionary containing the outputs of the selected style and content layers
+        """
+        outputs = {}
+        for layer in self.style_layers:
+            outputs[layer] = self.vgg.get_layer(layer)(image)
+        outputs[self.content_layer] = self.vgg.get_layer(self.content_layer)(image)
+        return outputs
