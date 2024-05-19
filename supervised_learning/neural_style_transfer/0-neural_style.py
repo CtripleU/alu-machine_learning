@@ -69,8 +69,8 @@ def scale_image(image):
         tf.Tensor: The scaled image.
     """
     if not isinstance(image, np.ndarray) or len(image.shape) != 3 or image.shape[2] != 3:
-            raise TypeError(
-                "image must be a numpy.ndarray with shape (h, w, 3)")
+        raise TypeError(
+            "image must be a numpy.ndarray with shape (h, w, 3)")
 
     h, w, _ = image.shape
     max_dim = 512
@@ -81,8 +81,8 @@ def scale_image(image):
         new_w = max_dim
         new_h = round(h * max_dim / w)
 
-    scaled_image = tf.image.resize(
-        image, (new_h, new_w), method=tf.image.ResizeMethod.BICUBIC)
-    scaled_image = tf.expand_dims(scaled_image, axis=0)
-    scaled_image = tf.clip_by_value(scaled_image / 255, 0.0, 1.0)
-    return scaled_image
+    image = tf.image.resize(image, (new_h, new_w),
+                            method=tf.image.ResizeMethod.BICUBIC)
+    image = tf.expand_dims(image, axis=0)
+    image = tf.clip_by_value(image / 255, 0, 1)
+    return image
