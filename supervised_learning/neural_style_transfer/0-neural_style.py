@@ -26,16 +26,22 @@ class NST:
             TypeError: If any of the input arguments are not the correct type
         """
 
-        if not isinstance(style_image, np.ndarray) or style_image.shape[2] != 3:
+        if not isinstance(style_image, np.ndarray
+                          ) or len(style_image.shape
+                                   ) != 3 or style_image.shape[2] != 3:
             raise TypeError(
                 "style_image must be a numpy.ndarray with shape (h, w, 3)")
-        if not isinstance(content_image, np.ndarray) or content_image.shape[2] != 3:
+        if not isinstance(content_image, np.ndarray
+                          ) or len(content_image.shape
+                                   ) != 3 or content_image.shape[2] != 3:
             raise TypeError(
                 "content_image must be a numpy.ndarray with shape (h, w, 3)")
-        if not isinstance(alpha, (int, float)) or alpha < 0:
+        if not (isinstance(alpha, int) or isinstance(alpha, float
+                                                     )) or alpha < 0:
             raise TypeError("alpha must be a non-negative number")
-        if not isinstance(beta, (int, float)) or beta < 0:
+        if not (isinstance(beta, int) or isinstance(beta, float)) or beta < 0:
             raise TypeError("beta must be a non-negative number")
+
 
         tf.config.run_functions_eagerly(True)
 
