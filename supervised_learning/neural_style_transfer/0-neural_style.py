@@ -10,7 +10,7 @@ class NST:
     """
 
     style_layers = ['block1_conv1', 'block2_conv1',
-                        'block3_conv1', 'block4_conv1', 'block5_conv1']
+                    'block3_conv1', 'block4_conv1', 'block5_conv1']
     content_layer = 'block5_conv2'
 
     def __init__(self, style_image, content_image, alpha=1e4, beta=1):
@@ -42,7 +42,6 @@ class NST:
             raise TypeError("alpha must be a non-negative number")
         if not (isinstance(beta, int) or isinstance(beta, float)) or beta < 0:
             raise TypeError("beta must be a non-negative number")
-
 
         tf.config.run_functions_eagerly(True)
         self.style_image = self.scale_image(style_image)
