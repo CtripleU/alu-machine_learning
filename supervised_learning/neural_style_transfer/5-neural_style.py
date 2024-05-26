@@ -267,6 +267,6 @@ class NST:
         for i in range(length):
             style_cost += (
                 self.layer_style_cost(style_outputs[i],
-                                    self.gram_style_features[i]) * weight)
+                                        self.gram_style_features[i]) * weight)
             print("style_cost:", style_cost)
         return style_cost
