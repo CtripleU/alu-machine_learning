@@ -35,9 +35,9 @@ class BidirectionalCell:
         Calculates the hidden state in the forward direction for one time step
 
         Parameters:
-        h_prev -- numpy.ndarray of shape (m, h) containing 
+        h_prev -- numpy.ndarray of shape (m, h) containing
         the previous hidden state
-        x_t -- numpy.ndarray of shape (m, i) 
+        x_t -- numpy.ndarray of shape (m, i)
         that contains the data input for the cell
 
         Returns:
