@@ -32,13 +32,13 @@ class BidirectionalCell:
 
     def forward(self, h_prev, x_t):
         """
-        Calculates the hidden state in the forward direction for 
+        Calculates the hidden state in the forward direction for
         one time step
 
         Parameters:
-        h_prev -- numpy.ndarray of shape (m, h) containing 
+        h_prev -- numpy.ndarray of shape (m, h) containing
         the previous hidden state
-        x_t -- numpy.ndarray of shape (m, i) that contains 
+        x_t -- numpy.ndarray of shape (m, i) that contains
         the data input for the cell
 
         Returns:
@@ -51,13 +51,13 @@ class BidirectionalCell:
 
     def backward(self, h_next, x_t):
         """
-        Calculates the hidden state in the backward direction 
+        Calculates the hidden state in the backward direction
         for one time step
 
         Parameters:
-        h_next -- numpy.ndarray of shape (m, h) containing 
+        h_next -- numpy.ndarray of shape (m, h) containing
         the next hidden state
-        x_t -- numpy.ndarray of shape (m, i) that contains 
+        x_t -- numpy.ndarray of shape (m, i) that contains
         the data input for the cell
 
         Returns:
