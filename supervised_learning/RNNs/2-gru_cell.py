@@ -17,7 +17,7 @@ class GRUCell:
         # Weights
         self.Wz = np.random.normal(size=(i + h, h))  # Update gate
         self.Wr = np.random.normal(size=(i + h, h))  # Reset gate
-        self.Wh = np.random.normal(size=(i + h, h))  # Intermediate hidden state
+        self.Wh = np.random.normal(size=(i + h, h))
         self.Wy = np.random.normal(size=(h, o))  # Output
 
         # Biases
