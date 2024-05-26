@@ -21,9 +21,9 @@ class BidirectionalCell:
         o -- dimensionality of the outputs
         """
         # Weights
-        self.Whf = np.random.normal(size=(i + h, h))  
-        self.Whb = np.random.normal(size=(i + h, h))  
-        self.Wy = np.random.normal(size=(2 * h, o))  
+        self.Whf = np.random.normal(size=(i + h, h))
+        self.Whb = np.random.normal(size=(i + h, h)) 
+        self.Wy = np.random.normal(size=(2 * h, o)) 
 
         # Biases
         self.bhf = np.zeros((1, h))  # Forward hidden states
