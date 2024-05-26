@@ -262,13 +262,6 @@ class NST:
     def content_cost(self, content_output):
         """
         Calculates the content cost for generated image
-
-        parameters:
-            content_output [tf.Tensor]:
-                contains content output for the generated image
-
-        returns:
-            the style cost
         """
         shape = self.content_feature.shape
         if not isinstance(content_output, (tf.Tensor, tf.Variable)) or \
