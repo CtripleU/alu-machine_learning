@@ -5,6 +5,7 @@ This module contains the BidirectionalCell class
 
 import numpy as np
 
+
 class BidirectionalCell:
     """
     Represents a bidirectional cell of an RNN
@@ -34,8 +35,10 @@ class BidirectionalCell:
         Calculates the hidden state in the forward direction for one time step
 
         Parameters:
-        h_prev -- numpy.ndarray of shape (m, h) containing the previous hidden state
-        x_t -- numpy.ndarray of shape (m, i) that contains the data input for the cell
+        h_prev -- numpy.ndarray of shape (m, h) containing 
+        the previous hidden state
+        x_t -- numpy.ndarray of shape (m, i) 
+        that contains the data input for the cell
 
         Returns:
         h_next -- the next hidden state
