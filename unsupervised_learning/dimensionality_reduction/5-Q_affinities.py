@@ -1,33 +1,30 @@
 #!/usr/bin/env python3
-
-"""
-This module contain a function that
-computes the Q affinities
-"""
-
+"""Calculates the Q affinities"""
 import numpy as np
 
 
 def Q_affinities(Y):
     """
-    Function that calculates Q affinities
+    Calculates the Q affinities
+    Args:
+        Y: is a numpy.ndarray of shape (n, ndim) containing
+        the low dimensional transformation of X
+        - n is the number of points
+        - ndim is the new dimensional representation of X
 
-    Y - numpy.ndarray (n, ndim) - low dimensional
-    transformation of X
-        n - number of data points
-        ndim - new dimensionality of transformed X
-    returns:
-    Q - numpy.ndarray (n, n) the Q affinities
-    num - numpy.ndarray (n,n) numerator of Q affinities
+    Returns: Q, num
+    Q: is a numpy.ndarray of shape (n, n) containing the Q affinities
+    num: is a numpy.ndarray of shape (n, n) containing the numerator
+    of the Q affinities
     """
-    n, ndim = Y.shape
-
-    # Compute the pairwise euclidean distance
     sum_Y = np.sum(np.square(Y), 1)
-    num = -2. * np.dot(Y, Y.T)
-    num = 1. / (1. + np.add(np.add(num, sum_Y).T, sum_Y))
-    np.fill_diagonal(num, 0.)
-    # Q = np.maximum(num, 1e-12)
-    Q = np.maximum(num, 1e-12)
-
+    D = np.add(np.add(-2 * np.dot(Y, Y.T), sum_Y).T, sum_Y)
+    # t-distribution
+    # yi -yj, subs of each point against others
+    num = (1 + D) ** (-1)
+    # distance with itself = 0
+    np.fill_diagonal(num, 0)
+    # sum yk - yl, sum of all the distances num matrix
+    den = np.sum(num)
+    Q = num / den
     return Q, num
