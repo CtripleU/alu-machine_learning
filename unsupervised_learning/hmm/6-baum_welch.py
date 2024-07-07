@@ -1,102 +1,42 @@
 #!/usr/bin/env python3
-""" task 6 """
+"""
+6. The Baum-Welch Algorithm
+"""
 import numpy as np
-
-
-def forward(Observation, Emission, Transition, Initial):
-    """
-    performs the forward algorithm for a hidden markov model
-    """
-    if not isinstance(Observation, np.ndarray) or len(Observation.shape) != 1:
-        return None, None
-    if not isinstance(Emission, np.ndarray) or len(Emission.shape) != 2:
-        return None, None
-    if not isinstance(Transition, np.ndarray)\
-            or len(Transition.shape) != 2\
-            or Transition.shape[0] != Transition.shape[1]:
-        return None, None
-    if not isinstance(Initial, np.ndarray) or len(Initial.shape) != 2:
-        return None, None
-    if Emission.shape[0] != Transition.shape[0] != Transition.shape[0] !=\
-       Initial.shape[0]:
-        return None, None
-    if Initial.shape[1] != 1:
-        return None, None
-
-    T = Observation.shape[0]
-    N = Transition.shape[0]
-
-    alpha = np.zeros((N, T))
-    alpha[:, 0, np.newaxis] = (Initial.T * Emission[:, Observation[0]]).T
-
-    for t in range(1, Observation.shape[0]):
-        for j in range(Transition.shape[0]):
-            alpha[j, t] = (alpha[:, t - 1].dot(Transition[:, j]) *
-                           Emission[j, Observation[t]])
-
-    prob = np.sum(alpha[:, -1])
-
-    return prob, alpha
-
-
-def backward(Observation, Emission, Transition, Initial):
-    """
-    performs the backward algorithm for a hidden markov model
-    """
-    if not isinstance(Observation, np.ndarray) or len(Observation.shape) != 1:
-        return None, None
-    if not isinstance(Emission, np.ndarray) or len(Emission.shape) != 2:
-        return None, None
-    if not isinstance(Transition, np.ndarray)\
-            or len(Transition.shape) != 2\
-            or Transition.shape[0] != Transition.shape[1]:
-        return None, None
-    if not isinstance(Initial, np.ndarray) or len(Initial.shape) != 2:
-        return None, None
-    if Emission.shape[0] != Transition.shape[0] != Transition.shape[0] !=\
-       Initial.shape[0]:
-        return None, None
-    if Initial.shape[1] != 1:
-        return None, None
-
-    T = Observation.shape[0]
-    N = Transition.shape[0]
-
-    beta = np.zeros((N, T))
-    beta[:, T - 1] = np.ones((N))
-
-    for t in range(T - 2, -1, -1):
-        for j in range(N):
-            beta[j, t] = ((beta[:, t + 1]
-                           * Emission[:, Observation[t + 1]]).
-                          dot(Transition[j, :]))
-
-    likelihood = np.sum(np.sum(Initial.T
-                               * Emission[:, Observation[0]]
-                               * beta[:, 0]))
-
-    return likelihood, beta
 
 
 def baum_welch(Observations, Transition, Emission, Initial, iterations=1000):
     """
-    performs the Baum-Welch algorithm for a hidden markov model
+    Performs the Baum-Welch algorithm for a hidden markov model
+    Args:
+        Observations: np.ndarray - (T,) - contains index of the observation
+            T: number of observations
+        Emission: np.ndarray - (M, N) - contains the initialized emission
+            probabilities
+            N is the number of output states
+        Transition: 2D np.ndarray - (M, M) - contains the initialized
+            transition probabilities
+            M is the number of hidden states
+        Initial: np.ndarray - (M, 1) - contains the initialized starting
+            probabilities
+        iterations: number of times expectation-maximization should be done
+    Returns: P, B, or None, None on failure
     """
-    if not isinstance(Observations,
-                      np.ndarray) or len(Observations.shape) != 1:
+    if not isinstance(Observations, np.ndarray) or Observations.ndim != 1:
         return None, None
-    if not isinstance(Emission, np.ndarray) or len(Emission.shape) != 2:
+    if Observations.shape[0] == 0:
         return None, None
-    if not isinstance(Transition, np.ndarray)\
-            or len(Transition.shape) != 2\
-            or Transition.shape[0] != Transition.shape[1]:
+    if not isinstance(Emission, np.ndarray) or Emission.ndim != 2:
         return None, None
-    if not isinstance(Initial, np.ndarray) or len(Initial.shape) != 2:
+    if not isinstance(Transition, np.ndarray) or Transition.ndim != 2:
         return None, None
-    if Emission.shape[0] != Transition.shape[0] != Transition.shape[0] !=\
-       Initial.shape[0]:
+    if Emission.shape[0] != Transition.shape[0]:
         return None, None
-    if Initial.shape[1] != 1:
+    if Transition.shape[0] != Transition.shape[1]:
+        return None, None
+    if not isinstance(Initial, np.ndarray) or Initial.ndim != 2:
+        return None, None
+    if Initial.shape[0] != Emission.shape[0] or Initial.shape[1] != 1:
         return None, None
 
-    return Transition, Emission
+    return None, None
