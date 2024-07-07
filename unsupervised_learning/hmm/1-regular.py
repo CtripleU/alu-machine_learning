@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" 0x02. Hidden Markov Models """
+
 import numpy as np
 
 
