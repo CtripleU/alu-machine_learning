@@ -5,49 +5,39 @@ This module performs Principal Component Analysis (PCA) to reduce the dimensiona
 of a dataset while maintaining a specified fraction of the original variance.
 """
 
-import numpy as np
 
+import numpy as np
 
 def pca(X, var=0.95):
     """
-    Performs PCA on a dataset to reduce its dimensionality while maintaining
-    a specified fraction of the original variance.
+    Performs PCA on a dataset.
 
     Parameters:
-    X (numpy.ndarray): The dataset, with shape (n, d) where n is the number
-                       of data points and d is the number of dimensions.
-    var (float or int): If float (<=1), the fraction of the variance to maintain.
-                        If int (>1), the number of components to retain.
-                        Defaults to 0.95.
+    X (numpy.ndarray): Shape (n, d) where n is the number of data points
+                       and d is the number of dimensions in each point.
+    var (float): The fraction of the variance that the PCA transformation should maintain.
 
     Returns:
-    numpy.ndarray: The weights matrix, W, that maintains the specified
-                   fraction of X's original variance. W has shape (d, nd),
-                   where nd is the new dimensionality of the transformed X.
+    numpy.ndarray: The weights matrix, W, that maintains var fraction of X's original variance.
+                   W has shape (d, nd) where nd is the new dimensionality of the transformed X.
     """
     # Compute the covariance matrix
-    covariance_matrix = np.cov(X, rowvar=False)
+    cov_matrix = np.cov(X.T)
 
     # Compute eigenvalues and eigenvectors
-    eigenvalues, eigenvectors = np.linalg.eig(covariance_matrix)
+    eigenvalues, eigenvectors = np.linalg.eig(cov_matrix)
 
-    # Sort the eigenvalues and eigenvectors in descending order
+    # Sort eigenvalues and corresponding eigenvectors in descending order
     idx = eigenvalues.argsort()[::-1]
     eigenvalues = eigenvalues[idx]
     eigenvectors = eigenvectors[:, idx]
 
-    if var <= 1:  # var represents the fraction of variance to retain
-        # Calculate the variance explained by each component
-        total_variance = sum(eigenvalues)
-        variance_explained = [eigenvalue / total_variance for eigenvalue in eigenvalues]
-        cumulative_variance_explained = np.cumsum(variance_explained)
+    # Calculate the cumulative variance ratio
+    total_variance = np.sum(eigenvalues)
+    cumulative_variance_ratio = np.cumsum(eigenvalues) / total_variance
 
-        # Determine the number of components to reach desired variance
-        num_components = np.where(cumulative_variance_explained >= var)[0][0] + 1
-    else:  # var represents the number of components to retain directly
-        num_components = int(var)
+    # Find the number of components that maintain the desired variance
+    n_components = np.argmax(cumulative_variance_ratio >= var) + 1
 
-    # Select the top eigenvectors based on the desired variance or number of components
-    W = eigenvectors[:, :num_components]
-
-    return W
+    # Return the weight matrix W
+    return eigenvectors[:, :n_components]
