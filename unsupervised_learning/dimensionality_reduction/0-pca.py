@@ -17,21 +17,21 @@ def pca(X, var=0.95):
     var (float): The fraction of the variance that the PCA should maintain.
 
     Returns:
-    numpy.ndarray: The weights matrix, W, that maintains var fraction of 
+    numpy.ndarray: The weights matrix, W, that maintains var fraction of
     X's original variance.
-                   W has shape (d, nd) where nd is the new dimensionality 
+                   W has shape (d, nd) where nd is the new dimensionality
                    of the transformed X.
     """
     # Perform Singular Value Decomposition
     _, s, v = np.linalg.svd(X)
-    
+
     # Calculate the cumulative variance ratio
     cumulative_variance_ratio = np.cumsum(s) / np.sum(s)
-    
+
     # Find the number of components that maintain the desired variance
     nd = np.argwhere(cumulative_variance_ratio >= var)[0, 0]
-    
+
     # Select the appropriate number of components
     W = v.T[:, :(nd + 1)]
-    
+
     return W
