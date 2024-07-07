@@ -17,7 +17,7 @@ def pca(X, ndim):
     version of X.
     """
     
-    X_centered = X - np.mean(X, axis=0, keepdims=True)
+    X_centered =  np.mean(X, axis=0, keepdims=True)
 
     A = X - X_centered
 
