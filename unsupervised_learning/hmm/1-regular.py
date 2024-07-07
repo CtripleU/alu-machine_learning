@@ -1,39 +1,18 @@
 #!/usr/bin/env python3
-
-"""
-This module determines steady state probabilities
-of a markov chain"""
-
+""" 0x02. Hidden Markov Models """
 import numpy as np
 
 
 def regular(P):
     """
-    determines steady state probabilities
-    of a markov chain
-
-    P - square 2D numpy.ndarray: (n, n) -transition matrix
-        - P[i, j] - probability of transitioning from
-    state i to state j
-        - n no. of states in the markov chain
-
-    Returns: a numpy.ndarray of shape (1, n) representing
-    steady state probabilities, or None on failure
+    determines the steady state probabilities of a regular markov chain
     """
+    if len(P.shape) != 2 or P.shape[0] != P.shape[1] or P.shape[0] < 1:
+        return None
 
-    if type(P) is not np.ndarray or len(P.shape) != 2:
-        return None
-    n, n = P.shape
-    if n != P.shape[0]:
-        return None
-    if np.sum(P, axis=1).all() != 1:
-        return None
+    P = np.linalg.matrix_power(P, 100)
     if np.any(P <= 0):
         return None
+    ss_prob = np.array([P[0]])
 
-    evals, evecs = np.linalg.eig(P.T)
-    evecs = evecs.T
-    for i in range(len(evals)):
-        if np.allclose(evals[i], 1):
-            return evecs[i] / np.sum(evecs[i])
-    return None
+    return ss_prob
