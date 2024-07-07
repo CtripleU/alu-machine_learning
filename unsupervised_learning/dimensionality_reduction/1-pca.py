@@ -16,24 +16,15 @@ def pca(X, ndim):
     numpy.ndarray: T, shape (n, ndim) containing the transformed
     version of X.
     """
-    # Center the data
-    X_centered = X - np.mean(X, axis=0)
+    
+    X_centered = X - np.mean(X, axis=0, keepdims=True)
 
-    # Compute the covariance matrix
-    cov_matrix = np.cov(X_centered, rowvar=False)
+    A = X - X_centered
 
-    # Compute eigenvalues and eigenvectors
-    eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
+    u, s, v = np.linalg.svd(A)
 
-    # Sort eigenvalues and corresponding eigenvectors in descending order
-    idx = np.argsort(eigenvalues)[::-1]
-    eigenvalues = eigenvalues[idx]
-    eigenvectors = eigenvectors[:, idx]
+    W = v.T[:, :ndim]
 
-    # Select the top ndim eigenvectors
-    W = eigenvectors[:, :ndim]
-
-    # Project the data onto the new subspace
-    T = np.dot(X_centered, W)
+    T = np.matmul(A, W)
 
     return T
