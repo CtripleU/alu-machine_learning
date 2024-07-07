@@ -16,7 +16,9 @@ def pca(X, var=0.95):
     Parameters:
     X (numpy.ndarray): The dataset, with shape (n, d) where n is the number
                        of data points and d is the number of dimensions.
-    var (float): The fraction of the variance to maintain. Defaults to 0.95.
+    var (float or int): If float (<=1), the fraction of the variance to maintain.
+                        If int (>1), the number of components to retain.
+                        Defaults to 0.95.
 
     Returns:
     numpy.ndarray: The weights matrix, W, that maintains the specified
@@ -34,23 +36,18 @@ def pca(X, var=0.95):
     eigenvalues = eigenvalues[idx]
     eigenvectors = eigenvectors[:, idx]
 
-    # Calculate the variance explained by each component
-    total_variance = sum(eigenvalues)
-    variance_explained = [eigenvalue / total_variance for eigenvalue in eigenvalues]
-    cumulative_variance_explained = np.cumsum(variance_explained)
+    if var <= 1:  # var represents the fraction of variance to retain
+        # Calculate the variance explained by each component
+        total_variance = sum(eigenvalues)
+        variance_explained = [eigenvalue / total_variance for eigenvalue in eigenvalues]
+        cumulative_variance_explained = np.cumsum(variance_explained)
 
-    # Determine the number of components to reach desired variance
-    num_components = np.where(cumulative_variance_explained >= var)[0][0] + 1
+        # Determine the number of components to reach desired variance
+        num_components = np.where(cumulative_variance_explained >= var)[0][0] + 1
+    else:  # var represents the number of components to retain directly
+        num_components = int(var)
 
-    # # Select the top eigenvectors based on the desired variance
-    # W = eigenvectors[:, :num_components]
-
-    # Adjust the condition to ensure the correct number of components is selected
-    if var <= 1:  # Assuming var represents the fraction of variance to retain
-        W = eigenvectors[:, :num_components]
-    else:  # If var is mistakenly set to represent the number of components directly
-        W = eigenvectors[:, :int(var)]
-
-    return W
+    # Select the top eigenvectors based on the desired variance or number of components
+    W = eigenvectors[:, :num_components]
 
     return W
