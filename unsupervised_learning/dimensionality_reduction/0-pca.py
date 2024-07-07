@@ -42,7 +42,15 @@ def pca(X, var=0.95):
     # Determine the number of components to reach desired variance
     num_components = np.where(cumulative_variance_explained >= var)[0][0] + 1
 
-    # Select the top eigenvectors based on the desired variance
-    W = eigenvectors[:, :num_components]
+    # # Select the top eigenvectors based on the desired variance
+    # W = eigenvectors[:, :num_components]
+
+    # Adjust the condition to ensure the correct number of components is selected
+    if var <= 1:  # Assuming var represents the fraction of variance to retain
+        W = eigenvectors[:, :num_components]
+    else:  # If var is mistakenly set to represent the number of components directly
+        W = eigenvectors[:, :int(var)]
+
+    return W
 
     return W
