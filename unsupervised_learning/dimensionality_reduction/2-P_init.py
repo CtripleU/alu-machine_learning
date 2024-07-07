@@ -1,52 +1,42 @@
 #!/usr/bin/env python3
 """
-Initializes all variables required to calculate the P affinities in t-SNE
+Defines function that initializes all variables required to
+calculate the P affinities in t-SNE
 """
+
+
 import numpy as np
 
 
 def P_init(X, perplexity):
     """
-    Initializes all variables required to calculate the P affinities in t-SNE
-    Args:
-        X: is a numpy.ndarray of shape (n, d) containing the dataset
-        to be transformed by t-SNE
-        perplexity: is the perplexity that all Gaussian distributions
-        should have
+    Initializes all variables required to
+    calculate the P affinities in t-SNE
 
-    Returns: (D, P, betas, H)
-    D: a numpy.ndarray of shape (n, n) that calculates
-    the pairwise distance between two data points
-    P: a numpy.ndarray of shape (n, n) initialized to all 0‘s that
-    will contain the P affinities
-    betas: a numpy.ndarray of shape (n, 1) initialized to all 1’s
-    that will contain all of the beta values
-    H: is the Shannon entropy for perplexity perplexity
-    """
-    (n, d) = X.shape
-    # np.square is the elementwise square; axis=1 means sum the rows.
-    # so sum_X is the vector of the norms of the x_i
-    sum_X = np.sum(np.square(X), 1)
-    # ||x_i-x_j||^2=||x_i||^2+||x_j||**2-2(x_i,x_j)
-    # np.dot(X,X.T) has entries (x_i,x_j)
-    # in position (i,j) you add ||x_i||^2 and ||x_j||^2 from the two sums
-    # with the transpose it is added the x_j^2 missing for each ||x_i-x_j||^2
-    # the result is that D is a symmetric matrix with the pairwise distances.
-    D = np.add(np.add(-2 * np.dot(X, X.T), sum_X).T, sum_X)
-    """ another version
-    n, _ = X.shape
-    # new axis to broadcast (1, 2500, 50) - (2500, 1, 50)
-    # by broadcasting it operates each element
-    # so the square of the substract is shape (2500, 2500, 50)
-    X1 = X[np.newaxis, :, :]
-    X2 = X[:, np.newaxis, :]
-    # if operates in axis 2, it desapears and becomes (2500, 2500)
-    D = np.sum(np.square(X1 - X2), axis=2)
-    """
+    parameters:
+        X [numpy.ndarray of shape (n, d)]:
+            containing the dataset to be transformed by t-SNE
+            n: the number of data points
+            d: the number of dimensions in each point
+        perplexity:
+            perplexity that all Gaussian distributions should have
 
-    np.fill_diagonal(D, 0)
-    betas = np.ones((n, 1))
+    returns:
+        (D, P, betas, H)
+        D [numpy.ndarray of shape (n, n)]:
+            calculates the squared pairwise distance between two data points
+            The diagonal D should be 0s
+        P [numpy.ndarray of shape (n, n)]:
+            initialized to all 0s that will contain P affinities
+        betas [numpy.ndarray of shape (n, 1)]:
+            initialized to all 1s that will contain all the beta values
+        H: the Shannon entropy for perplexity with a base of 2
+    """
+    n = X.shape[0]
+    mult = np.matmul(X, -X.T)
+    summation = np.sum(np.square(X), 1)
+    D = np.add(np.add(2 * mult, summation), summation.T)
     P = np.zeros((n, n))
+    betas = np.ones((n, 1))
     H = np.log2(perplexity)
-
-    return D, P, betas, H
+    return (D, P, betas, H)
