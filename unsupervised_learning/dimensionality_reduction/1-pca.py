@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""
+This module contains a function that performs PCA on a dataset.
+"""
 
 import numpy as np
 
@@ -16,8 +19,8 @@ def pca(X, ndim):
     numpy.ndarray: T, shape (n, ndim) containing the transformed
     version of X.
     """
-    
-    X_centered =  np.mean(X, axis=0, keepdims=True)
+
+    X_centered = np.mean(X, axis=0, keepdims=True)
 
     A = X - X_centered
 
