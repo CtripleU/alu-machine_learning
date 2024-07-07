@@ -1,66 +1,58 @@
 #!/usr/bin/env python3
-
 """
-This module contain a function that calculates
-the symmetric p affinities of a dataset
+Calculates the symmetric P affinities
 """
-
 import numpy as np
-
-
 P_init = __import__('2-P_init').P_init
 HP = __import__('3-entropy').HP
 
 
 def P_affinities(X, tol=1e-5, perplexity=30.0):
     """
-    Function that calculates the Symmetric P affinities
-    of a dataset
-
-    X: numpy.ndarray: (n, d) the dataset
-        n - no. of data points
-        d - no. of dimensions in each data point
-    perplexity: the perplexity of all Gaussian distributions
-    tol: max tolerance for shannon entropy calculation
-    returns:
-    P: numpy.ndarray: (n, n) the symmetric P affinities
+    Calculates the symmetric P affinities of a data set
+    :param X: numpy.ndarray of shape (n, d) containing the dataset to be
+    transformed by t-SNE
+        n is the number of data points
+        d is the number of dimensions in each point
+    :param tol: the maximum tolerance allowed (inclusive) for the difference
+    in Shannon entropy from perplexity for all Gaussian distributions
+    :param perplexity: perplexity that all Gaussian distributions should have
+    :return: P, a numpy.ndarray of shape (n, n) containing the symmetric P
+    affinities
     """
-    
     n, d = X.shape
-
     D, P, betas, H = P_init(X, perplexity)
 
+    if n == 0:
+        return P
+
     for i in range(n):
-        beta_min = -np.inf
-        beta_max = np.inf
-        Di = np.append(D[i, :i], D[i, i+1:])
-        Hi, Pi = HP(Di, betas[i])
+        copy = D[i].copy()
+        copy = np.delete(copy, i, axis=0)
+        Hi, Pi = HP(copy, betas[i])
+        Hdiff = Hi - H
 
-        diff = Hi - H
+        low = None
+        high = None
 
-        while np.abs(diff) > tol:
-            if diff > 0:
-                beta_min = betas[i].copy()
-                if beta_max == np.inf or beta_max == -np.inf:
+        while np.abs(Hdiff) > tol:
+            if Hdiff > 0:
+                low = betas[i, 0]
+                if high is None:
                     betas[i] = betas[i] * 2
                 else:
-                    betas[i] = (betas[i] + beta_max) / 2
+                    betas[i] = (betas[i] + high) / 2
+
             else:
-                beta_max = betas[i].copy()
-                if beta_min == np.inf or beta_min == -np.inf:
+                high = betas[i, 0]
+                if low is None:
                     betas[i] = betas[i] / 2
                 else:
-                    betas[i] = (betas[i] + beta_min) / 2
+                    betas[i] = (betas[i] + low) / 2
 
-            # Recalculate the Shannon entropy and P affinities
-            Hi, Pi = HP(Di, betas[i])
-            diff = Hi - H
-
-        # Update the P affinities
-        P[i, :i] = Pi[:i]
-        P[i, i+1:] = Pi[i:]
-
-    # Make sure P is symmetric
-    P = (P + P.T) / (2 * n)
-
+            Hi, Pi = HP(copy, betas[i])
+            Hdiff = Hi - H
+        Pi = np.insert(Pi, i, 0)
+        P[i] = Pi
+    P = (P.T + P) / (2 * n)
     return P
