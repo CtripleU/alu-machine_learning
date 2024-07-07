@@ -6,6 +6,7 @@ This module contains a function that performs PCA on a dataset
 
 import numpy as np
 
+
 def pca(X, var=0.95):
     """
     Performs PCA on a dataset.
@@ -16,8 +17,10 @@ def pca(X, var=0.95):
     var (float): The fraction of the variance that the PCA should maintain.
 
     Returns:
-    numpy.ndarray: The weights matrix, W, that maintains var fraction of X's original variance.
-                   W has shape (d, nd) where nd is the new dimensionality of the transformed X.
+    numpy.ndarray: The weights matrix, W, that maintains var fraction of 
+    X's original variance.
+                   W has shape (d, nd) where nd is the new dimensionality 
+                   of the transformed X.
     """
     # Perform Singular Value Decomposition
     _, s, v = np.linalg.svd(X)
